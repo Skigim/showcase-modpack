@@ -1,0 +1,15 @@
+# Built by `rsmm apply` from your own game install: derived from the game's
+# copyrighted data, so never committed.
+mods/*/assets/
+mods/*/.rsmm_*
+
+# Your own choices and paths, not the pack's.
+paths.toml
+mods/*/config.toml
+tools/boss_attacks/selection.json
+tools/boss_attacks/attacks.txt
+tools/wiki_setup/settings.json
+
+dist/
+__pycache__/
+*.tmp

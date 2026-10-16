@@ -1,0 +1,18 @@
+{
+  "id": "tentacle",
+  "label": "Chapter 1 - Tentacle Master (Dark Hills)",
+  "entity": "Enemies/Tentacle_Nightmares/Boss_Tentacle_Master_Nightmare",
+  "status": "single-attack pool proven in game 2026-10-15 (FastSlam); multi-attack pools untested",
+  "pre_steps": [
+    {"link": "Attack Common\\Use New Boss Patterns Tester.on_false", "to": "State New Boss Patterns Active"}
+  ],
+  "draw_count": "Attack Common\\Attack Patterns Random.value_10",
+  "attacks": [
+    {"name": "DoubleSlam", "data": "Swipe",              "weight": "Attack Common\\Attack Patterns Random.obj_2[0]"},
+    {"name": "Attraction", "data": "Attraction",         "weight": "Attack Common\\Attack Patterns Random.obj_3[0]"},
+    {"name": "Rain",       "data": "Rain",               "weight": "Attack Common\\Attack Patterns Random.obj_4[0]"},
+    {"name": "Shockwave",  "data": "Shockwave",          "weight": "Attack Common\\Attack Patterns Random.obj_5[0]"},
+    {"name": "Thorns",     "data": "Spread Projectiles", "weight": "Attack Common\\Attack Patterns Random.obj_6[0]"},
+    {"name": "FastSlam",   "data": "FastSlam",           "weight": "Attack Common\\Attack Patterns Random.obj_7[0]"}
+  ]
+}

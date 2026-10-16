@@ -1,0 +1,17 @@
+{
+  "id": "faceless",
+  "label": "Chapter 2 - Faceless Nightmare",
+  "entity": "Enemies/Faceless_Nightmares/Boss_Faceless_Nightmare",
+  "status": "dry-run only, untested in game. Main pool only (Attack Patterns Random): Attack Patterns Shot Random (Shot, Rays) and Attack Summon Eyes Random (Shot Eyes, AOE Eyes) are NOT touched, so one Shot/Rays and one Shot Eyes/AOE Eyes attack stay available beside the chosen ones",
+  "pre_steps": [
+    {"link": "Attack Common\\Use New Boss Patterns Tester.on_false", "to": "State New Boss Patterns Active"}
+  ],
+  "draw_count": "Attack Common\\Attack Patterns Random.value_9",
+  "attacks": [
+    {"name": "Beam",        "data": "Beam",        "weight": "Attack Common\\Attack Patterns Random.obj_2[0]"},
+    {"name": "Spin",        "data": "Spin",        "weight": "Attack Common\\Attack Patterns Random.obj_3[0]"},
+    {"name": "RemoteBeams", "data": "Remote Beam", "weight": "Attack Common\\Attack Patterns Random.obj_4[0]"},
+    {"name": "Vanish",      "data": "Vanish",      "weight": "Attack Common\\Attack Patterns Random.obj_5[0]"},
+    {"name": "EyeLaserSmash", "data": "Slam",      "weight": "Attack Common\\Attack Patterns Random.obj_6[0]"}
+  ]
+}
