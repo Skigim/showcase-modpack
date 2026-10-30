@@ -1,18 +1,16 @@
-"""One window for the boss-footage setup: camera, hero and boss attacks.
+"""One window for the boss-footage setup: hero and boss attacks.
 
     python wiki_setup.py            the window
     python wiki_setup.py --write    write every file from settings.json, no window, no apply
 
-Only the camera changes while the game is running (WikiZoom reads its
-config.toml live). Everything else is a data patch: Save writes the mods and
-runs `rsmm apply`, which needs the game closed, and it shows on the next launch.
-So while Ravenswatch.exe runs, the hero and attack controls are locked.
-Each section's "Reset to normal" (then Save) leaves its mod enabled but empty,
-e.g. camera zoom over otherwise normal gameplay.
+Everything here is a data patch: Save writes the mods and runs `rsmm apply`,
+which needs the game closed, and it shows on the next launch. So while
+Ravenswatch.exe runs, the controls are locked. Each section's "Reset to normal"
+(then Save) leaves its mod enabled but empty. The camera is not this pack's:
+use Ovilli's camera-control mod, which changes it live.
 
 Files it owns (each is overwritten on Save):
     mods/WikiScene/manifest.toml          hero toggles
-    mods/WikiZoom/config.toml             live distance (pack copy and <game> copy)
     tools/boss_attacks/selection.json, attacks.txt, mods/BossAttackRoll/manifest.toml
                                           via boss_attacks.py, so its command and
                                           attacks.txt keep working
@@ -26,7 +24,6 @@ import queue
 import subprocess
 import sys
 import threading
-import tomllib
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -37,55 +34,39 @@ import paths  # noqa: E402
 
 SETTINGS = HERE / "settings.json"
 SCENE_MANIFEST = paths.MODS / "WikiScene" / "manifest.toml"
-ZOOM_CONFIGS = [paths.MODS / "WikiZoom" / "config.toml",
-                paths.game_dir() / "mods" / "WikiZoom" / "config.toml"]
 PROCESS_NAME = "Ravenswatch.exe"
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
-SHIPPED_DISTANCE = 33
-MAX_DISTANCE = 150          # WikiZoom's own cap
 HERO = [                    # key, label
     ("hide_hero", "Hide the hero (body and weapon)"),
     ("invincible", "Hero can't be hurt"),
     ("hide_marks", "Hide the ground shadow and aim arrow"),
     ("hide_lifebar", "Hide the bar above the hero (health, energy, pips)"),
 ]
-DEFAULTS = {"distance": 66, **{k: False for k, _ in HERO}}   # what the pack ships
+DEFAULTS = {k: False for k, _ in HERO}   # what the pack ships
 
 
 # ---------------------------------------------------------------- files
+
+def _scene(saved: dict) -> dict:
+    """DEFAULTS filled in from a saved scene; keys no longer used (the old distance) drop out."""
+    return {k: saved.get(k, v) for k, v in DEFAULTS.items()}
+
 
 def load_settings() -> dict:
     s = {"scene": dict(DEFAULTS), "applied": None}
     if SETTINGS.is_file():
         s.update(json.loads(SETTINGS.read_text(encoding="utf-8")))
-        s["scene"] = {**DEFAULTS, **s["scene"]}
+        s["scene"] = _scene(s["scene"])
     if s["applied"] is None:    # first run: the pack as shipped
         s["applied"] = {"scene": dict(DEFAULTS), "attacks": ba.load_selection()}
+    else:
+        s["applied"]["scene"] = _scene(s["applied"]["scene"])
     return s
 
 
 def save_settings(s: dict) -> None:
     SETTINGS.write_text(json.dumps(s, indent=2) + "\n", encoding="utf-8")
-
-
-def write_camera(distance: float) -> list[str]:
-    """Live distance into WikiZoom's config.toml; returns the paths written."""
-    written = []
-    for p in ZOOM_CONFIGS:
-        if not p.parent.is_dir():
-            continue
-        all_cameras = True
-        if p.is_file():
-            try:
-                all_cameras = bool(tomllib.loads(p.read_text(encoding="utf-8"))
-                                   .get("config", {}).get("all_cameras", True))
-            except tomllib.TOMLDecodeError:
-                pass
-        p.write_text(f"[config]\ndistance = {float(distance):.1f}\n"
-                     f"all_cameras = {'true' if all_cameras else 'false'}\n", encoding="utf-8")
-        written.append(str(p))
-    return written
 
 
 SCENE_HEADER = """\
@@ -141,7 +122,6 @@ def scene_manifest(scene: dict) -> str:
         steps.append("\n# LIFEBAR (with energy/resource pips) never spawned. Display only.")
         steps.append(_remove_link(r"Life Bar\State Player Lifebar.while_active[0]"))
         steps.append(_remove_link(r"Life Bar\State Peer Lifebar.while_active[0]"))
-    # The camera is WikiZoom's alone (live, client-only); nothing here touches it.
     # Everything at normal = no [[content]]: the mod stays enabled and changes nothing.
     out = [SCENE_HEADER.format(enabled="true")]
     if steps:
@@ -160,11 +140,6 @@ def write_data(scene: dict, attacks: dict) -> None:
     (ba.MOD_DIR / "manifest.toml").write_text(ba.manifest(tables, attacks), encoding="utf-8")
     SCENE_MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     SCENE_MANIFEST.write_text(scene_manifest(scene), encoding="utf-8")
-
-
-def data_part(scene: dict) -> dict:
-    """The scene settings that need an apply. The distance is live, so it is not one."""
-    return {k: v for k, v in scene.items() if k != "distance"}
 
 
 def game_running() -> bool:
@@ -195,30 +170,6 @@ def run_window() -> None:
 
     banner = tk.Label(root, anchor="w", justify="left", font=("Segoe UI", 10, "bold"), padx=10, pady=6)
     banner.pack(fill="x")
-
-    # camera
-    cam = ttk.LabelFrame(root, text="Camera  (changes live, even mid-run)")
-    cam.pack(fill="x", **pad)
-    dist = tk.DoubleVar(value=float(settings["scene"]["distance"]))
-    dist_label = ttk.Label(cam, width=28)
-    dist_label.grid(row=0, column=1, sticky="w", padx=8)
-
-    def show_dist(*_):
-        d = int(round(dist.get()))
-        dist.set(d)
-        dist_label.config(text="off (game's own camera)" if d == 0 else
-                          f"distance {d}   ({d / SHIPPED_DISTANCE:.1f}x normal)")
-    ttk.Scale(cam, from_=0, to=MAX_DISTANCE, variable=dist, length=320,
-              command=show_dist).grid(row=0, column=0, padx=8, pady=6)
-    ttk.Label(cam, foreground="gray", text=f"Normal is {SHIPPED_DISTANCE}. 0 hands the camera back to the game. "
-              "Don't press the zoom key while filming.").grid(row=1, column=0, columnspan=2, sticky="w", padx=8, pady=(0, 6))
-    show_dist()
-
-    def reset_camera():
-        dist.set(0)
-        show_dist()
-    ttk.Button(cam, text="Reset to normal", command=reset_camera).grid(row=0, column=2, sticky="e", padx=8)
-    cam.columnconfigure(2, weight=1)
 
     # hero
     locked = []   # widgets that only change with the game closed
@@ -289,7 +240,7 @@ def run_window() -> None:
         log.config(state="disabled")
 
     def current() -> tuple[dict, dict | str]:
-        scene = {"distance": int(round(dist.get())), **{k: v.get() for k, v in hero_vars.items()}}
+        scene = {k: v.get() for k, v in hero_vars.items()}
         attacks = {}
         for t in bosses:
             names = [n for n, v in atk_vars[t["id"]].items() if v.get()]
@@ -307,16 +258,15 @@ def run_window() -> None:
         if running != state["running"]:
             state["running"] = running
             if running:
-                banner.config(text="Game is running: only the camera changes now.\n"
-                              "Close the game to change the hero or the attacks.", bg="#fde7c8")
+                banner.config(text="Game is running: close it to change the hero or the attacks.",
+                              bg="#fde7c8")
             else:
                 banner.config(text="Game is closed: Save installs everything for the next launch.", bg="#d8efd8")
             for w in locked:
                 w.state(["disabled"] if running else ["!disabled"])
         scene, attacks = current()
         applied = settings["applied"]
-        if not isinstance(attacks, str) and (data_part(scene) != data_part(applied["scene"])
-                                             or attacks != applied["attacks"]):
+        if not isinstance(attacks, str) and (scene != applied["scene"] or attacks != applied["attacks"]):
             pending.config(text="hero/attack changes not installed yet")
         else:
             pending.config(text="")
@@ -366,13 +316,8 @@ def run_window() -> None:
         if isinstance(attacks, str):
             say(attacks)
             return
-        written = write_camera(scene["distance"])
-        say(f"Camera distance {scene['distance']} written to {len(written)} config file(s)"
-            + (" (the running game follows within ~2 s)." if state["running"] else "."))
-        settings["scene"]["distance"] = scene["distance"]
         if game_running():
-            save_settings(settings)
-            say("Game is running, so the hero and attack settings were not touched.")
+            say("Game is running, so nothing was saved. Close it and Save again.")
             refresh()
             return
         settings["scene"] = scene
@@ -384,7 +329,7 @@ def run_window() -> None:
         threading.Thread(target=apply_thread, args=(scene, attacks), daemon=True).start()
 
     save_btn.config(command=save)
-    for v in [dist, *hero_vars.values(), *(v for d in atk_vars.values() for v in d.values())]:
+    for v in [*hero_vars.values(),*(v for d in atk_vars.values() for v in d.values())]:
         v.trace_add("write", lambda *_: refresh())
     poll_game()
     drain()
@@ -394,7 +339,6 @@ def run_window() -> None:
 def main(argv: list[str]) -> int:
     if "--write" in argv:
         s = load_settings()
-        write_camera(s["scene"]["distance"])
         write_data(s["scene"], ba.load_selection())
         print("written; not applied")
         return 0
