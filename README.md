@@ -53,13 +53,13 @@ BossAttackRoll and WikiScene change the game, so use them solo.
 
 ## Game data
 
-This repo holds only manifests, Lua and tools. `rsmm apply` builds the patched
+This repo holds only manifests and tools. `rsmm apply` builds the patched
 game files from your own install, and `.gitignore` keeps them out of the repo,
 since they derive from the game's copyrighted data.
 
-`rsmm pack <id>` zips a mod the way RSMM shares them. Packed after an apply
-with choices made, a BossAttackRoll or WikiScene zip includes that patched
-game file.
+Pack or share a mod from a folder without `assets/`, so the zip holds only
+the manifest. Each player's own `rsmm apply` builds the patched files from
+their install.
 
 ## License
 
