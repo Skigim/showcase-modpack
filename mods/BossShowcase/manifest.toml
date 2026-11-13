@@ -1,0 +1,152 @@
+#:schema https://docs.rsmm.me/manifest.schema.json
+# Settings-driven: every step below is gated by a field in config_schema.toml,
+# set in the RSMM app. Nothing changes until a boss's "Control" switch is on.
+# Changes take effect on the next launch.
+[mod]
+id                = "BossShowcase"
+name              = "Boss Showcase"
+version           = "1.0.0"
+author            = "Skigim"
+summary           = "Choose which attacks each chapter boss uses."
+description       = "For filming or practising boss attacks. Turn on a chapter boss in the settings, then give each attack a weight (0 = never). One attack at a time is proven on Tentacle Master; several at once, Faceless and Hands are untested. Hands: only the both-hands attacks are controlled."
+license           = "MIT"
+repo_url          = "https://github.com/Skigim/showcase-modpack"
+tags              = ["boss", "showcase", "wiki", "practice"]
+enabled           = false
+multiplayer_scope = "deterministic-shared"
+sdk_version       = ">=3.0,<4"
+
+# Chapter 1 - Tentacle Master (Dark Hills)
+# status: single-attack pool proven in game 2026-10-15 (FastSlam); multi-attack pools untested
+[[content]]
+kind   = "entity"
+id     = "pool_tentacle"
+entity = "Enemies/Tentacle_Nightmares/Boss_Tentacle_Master_Nightmare"
+
+[[content.steps]]
+link = 'Attack Common\Use New Boss Patterns Tester.on_false'
+to   = 'State New Boss Patterns Active'
+when = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.value_10'
+config = "tentacle_draws"
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_2[0]'   # DoubleSlam
+config = "tentacle_doubleslam"
+times  = 1000
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_3[0]'   # Attraction
+config = "tentacle_attraction"
+times  = 1000
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_4[0]'   # Rain
+config = "tentacle_rain"
+times  = 1000
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_5[0]'   # Shockwave
+config = "tentacle_shockwave"
+times  = 1000
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_6[0]'   # Thorns
+config = "tentacle_thorns"
+times  = 1000
+when   = "tentacle"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_7[0]'   # FastSlam
+config = "tentacle_fastslam"
+times  = 1000
+when   = "tentacle"
+
+# Chapter 2 - Faceless Nightmare
+# status: dry-run only, untested in game. Main pool only (Attack Patterns Random): Attack Patterns Shot Random (Shot, Rays) and Attack Summon Eyes Random (Shot Eyes, AOE Eyes) are NOT touched, so one Shot/Rays and one Shot Eyes/AOE Eyes attack stay available beside the chosen ones
+[[content]]
+kind   = "entity"
+id     = "pool_faceless"
+entity = "Enemies/Faceless_Nightmares/Boss_Faceless_Nightmare"
+
+[[content.steps]]
+link = 'Attack Common\Use New Boss Patterns Tester.on_false'
+to   = 'State New Boss Patterns Active'
+when = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.value_9'
+config = "faceless_draws"
+when   = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_2[0]'   # Beam
+config = "faceless_beam"
+times  = 1000
+when   = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_3[0]'   # Spin
+config = "faceless_spin"
+times  = 1000
+when   = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_4[0]'   # RemoteBeams
+config = "faceless_remotebeams"
+times  = 1000
+when   = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_5[0]'   # Vanish
+config = "faceless_vanish"
+times  = 1000
+when   = "faceless"
+
+[[content.steps]]
+set    = 'Attack Common\Attack Patterns Random.obj_6[0]'   # EyeLaserSmash
+config = "faceless_eyelasersmash"
+times  = 1000
+when   = "faceless"
+
+# Chapter 3 - Hands Nightmares (manager)
+# status: dry-run only, untested in game. Forces only the manager's synchro (both-hands) attacks; each hand's own attacks (caster: Orb, Rapid Fire, Beam Swipe, Shooting Orb; melee: Claws, Spikes, Volley Of Spikes, Chest Scream) come from pools in Hands_Nightmares_Hand_Model and are NOT touched, so this does not isolate a single attack
+[[content]]
+kind   = "entity"
+id     = "pool_hands"
+entity = "Enemies/Hands_Nightmares/Boss_Hands_Nightmares_Manager"
+
+[[content.steps]]
+link = 'Attacks\Initialize Boss Patterns Selection Tester.on_false'
+to   = 'State New Boss Attack Patterns Active'
+when = "hands"
+
+[[content.steps]]
+set    = 'Attacks\Available Attacks Random Choice.value_7'
+config = "hands_draws"
+when   = "hands"
+
+[[content.steps]]
+set    = 'Attacks\Available Attacks Random Choice.obj_2[0]'   # DeathBeam
+config = "hands_deathbeam"
+times  = 1000
+when   = "hands"
+
+[[content.steps]]
+set    = 'Attacks\Available Attacks Random Choice.obj_3[0]'   # Spin
+config = "hands_spin"
+times  = 1000
+when   = "hands"
+
+[[content.steps]]
+set    = 'Attacks\Available Attacks Random Choice.obj_4[0]'   # ThunderSpin
+config = "hands_thunderspin"
+times  = 1000
+when   = "hands"

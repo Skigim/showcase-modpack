@@ -1,0 +1,139 @@
+# Per chapter boss: a Control switch, then how many attacks it draws per
+# cycle and a weight per attack. Defaults change nothing.
+
+# Chapter 1 - Tentacle Master (Dark Hills)
+[fields.tentacle]
+type    = "bool"
+default = false
+label   = "Tentacle Master: control its attacks"
+
+[fields.tentacle_draws]
+type    = "int"
+default = 1
+min     = 1
+max     = 6
+label   = "Tentacle Master: attacks drawn per cycle (how many weights are above 0)"
+
+[fields.tentacle_doubleslam]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: DoubleSlam weight (0 = never)"
+
+[fields.tentacle_attraction]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: Attraction weight (0 = never)"
+
+[fields.tentacle_rain]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: Rain weight (0 = never)"
+
+[fields.tentacle_shockwave]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: Shockwave weight (0 = never)"
+
+[fields.tentacle_thorns]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: Thorns weight (0 = never)"
+
+[fields.tentacle_fastslam]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Tentacle Master: FastSlam weight (0 = never)"
+
+# Chapter 2 - Faceless Nightmare
+[fields.faceless]
+type    = "bool"
+default = false
+label   = "Faceless Nightmare: control its attacks (untested)"
+
+[fields.faceless_draws]
+type    = "int"
+default = 1
+min     = 1
+max     = 5
+label   = "Faceless Nightmare: attacks drawn per cycle (how many weights are above 0)"
+
+[fields.faceless_beam]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Faceless Nightmare: Beam weight (0 = never)"
+
+[fields.faceless_spin]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Faceless Nightmare: Spin weight (0 = never)"
+
+[fields.faceless_remotebeams]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Faceless Nightmare: RemoteBeams weight (0 = never)"
+
+[fields.faceless_vanish]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Faceless Nightmare: Vanish weight (0 = never)"
+
+[fields.faceless_eyelasersmash]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Faceless Nightmare: EyeLaserSmash weight (0 = never)"
+
+# Chapter 3 - Hands Nightmares (manager)
+[fields.hands]
+type    = "bool"
+default = false
+label   = "Hands Nightmares: control its attacks (untested)"
+
+[fields.hands_draws]
+type    = "int"
+default = 1
+min     = 1
+max     = 3
+label   = "Hands Nightmares: attacks drawn per cycle (how many weights are above 0)"
+
+[fields.hands_deathbeam]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Hands Nightmares: DeathBeam weight (0 = never)"
+
+[fields.hands_spin]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Hands Nightmares: Spin weight (0 = never)"
+
+[fields.hands_thunderspin]
+type    = "int"
+default = 1
+min     = 0
+max     = 10
+label   = "Hands Nightmares: ThunderSpin weight (0 = never)"

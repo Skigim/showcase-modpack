@@ -1,3 +1,2 @@
-# Copy to paths.toml (git ignores it) and point these at your own folders.
+# Copy to paths.toml (git ignores it) and point this at your own RSMM checkout.
 rsmm = 'C:\path\to\RavenswatchModManager'
-game = 'C:\Program Files (x86)\Steam\steamapps\common\Ravenswatch'

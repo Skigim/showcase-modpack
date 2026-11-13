@@ -1,0 +1,87 @@
+#:schema https://docs.rsmm.me/manifest.schema.json
+# Every edit but SCARLET CLOAK is on Hero_Common, the parent of every hero, and
+# each part is switched by a field in config_schema.toml (set in the RSMM app;
+# next launch). Proven in game 2026-10-15 (Chapter 1) as WikiScene; SCARLET
+# CLOAK and the settings switches tested in game before 1.0.0. None of the
+# Hero_Common edits touches the hero's Is Targetable Condition, so enemies
+# still attack. Stay out of cinematics: they make the hero Concealed.
+[mod]
+id                = "ghost-mode"
+name              = "Ghost Mode"
+version           = "1.0.0"
+author            = "Skigim"
+summary           = "Hides the hero and keeps it alive, for filming and testing."
+description       = "The hero, its ground shadow, aim arrow and lifebar are hidden, and it can't be hurt. Enemies still target it. Each part has its own switch in the settings and affects every hero, except Scarlet Cloak: playing Scarlet, cast her human DEFENSE once and she stays concealed, so enemies don't notice her while you roam the map."
+license           = "MIT"
+repo_url          = "https://github.com/Skigim/showcase-modpack"
+tags              = ["hero", "debug", "showcase", "wiki"]
+enabled           = false
+multiplayer_scope = "deterministic-shared"
+sdk_version       = ">=3.0,<4"
+
+[[content]]
+kind   = "entity"
+id     = "ghost_mode"
+entity = "Heroes/Hero_Common/Hero_Common"
+
+# HIDE: the Appear Value Selector's literal fallback 1.0 -> 0 (u_appear dissolve).
+[[content.steps]]
+set   = 'Shading\Appear Value Selector.entries[10][1]'
+value = 0
+when  = "hide_hero"
+
+# INVINCIBLE: the debug cheat state held from normal behaviour; targeting untouched.
+[[content.steps]]
+add_link = 'Behaviour Default.while_active'
+to       = '_DBG State Invincible Cheat'
+when     = "invincible"
+
+[[content.steps]]
+add_link = 'Behaviour Interacting.while_active'
+to       = '_DBG State Invincible Cheat'
+when     = "invincible"
+
+# SHADOW and AIM ARROW decals: visible flag off (polarity inferred) and scale ~0.
+[[content.steps]]
+set   = 'Base\Ground Shadow.value_5'
+value = false
+when  = "hide_marks"
+
+[[content.steps]]
+set   = 'Base\Ground Shadow.value_10'
+value = 0.0001
+when  = "hide_marks"
+
+[[content.steps]]
+set   = 'Base\Ground Marker.value_5'
+value = false
+when  = "hide_marks"
+
+[[content.steps]]
+set   = 'Base\Ground Marker.value_10'
+value = 0.0001
+when  = "hide_marks"
+
+# LIFEBAR (with energy/resource pips) never spawned. Display only.
+[[content.steps]]
+remove_link = 'Life Bar\State Player Lifebar.while_active[0]'
+when        = "hide_lifebar"
+
+[[content.steps]]
+remove_link = 'Life Bar\State Peer Lifebar.while_active[0]'
+when        = "hide_lifebar"
+
+# SCARLET CLOAK: her human DEFENSE conceals her while its state is active
+# (Hero_Red's own State Concealed Custom Condition: human form AND State
+# Defensive Ability), which sets the Concealed flag and clears Targetable.
+# Its base duration 2 s -> 99999 s, so it lasts until wolf form or another
+# ability ends it. Murderous Intent multiplies this same value.
+[[content]]
+kind   = "entity"
+id     = "scarlet_cloak"
+entity = "Heroes/Hero_Red/Hero_Red"
+
+[[content.steps]]
+set   = 'Ability Defensive\Human Defensive Ability Duration.value'
+value = 99999.0
+when  = "scarlet_cloak"

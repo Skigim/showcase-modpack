@@ -1,0 +1,29 @@
+# Each switch is one part of Ghost Mode. All on by default: installing the mod
+# is asking for it. Changes take effect on the next launch.
+
+[fields.hide_hero]
+type    = "bool"
+default = true
+label   = "Hide the hero (body and weapon)"
+
+[fields.invincible]
+type    = "bool"
+default = true
+label   = "Hero can't be hurt"
+
+[fields.hide_marks]
+type    = "bool"
+default = true
+label   = "Hide the ground shadow and aim arrow"
+
+[fields.hide_lifebar]
+type    = "bool"
+default = true
+label   = "Hide the bar above the hero (health, energy, pips)"
+
+# Off by default: the parts above leave enemies attacking the hero, which
+# filming a boss needs. This one is for roaming the map unseen, as Scarlet.
+[fields.scarlet_cloak]
+type    = "bool"
+default = false
+label   = "Scarlet: Cloak (human DEFENSE) lasts until wolf form or another ability"
